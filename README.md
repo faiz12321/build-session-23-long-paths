@@ -8,7 +8,7 @@ Microsoft's "Maximum Path Length Limitation" page says the Windows API tradition
 
     python make_sample.py       # makes a small made-up folder tree in sample/
     python pathlen.py sample    # list the long paths inside a folder
-    python -m unittest -v       # nineteen automated tests
+    python -m unittest -v       # 33 small fixture tests
 
 On Windows, if `python` is not found, use `py`.
 
@@ -23,9 +23,15 @@ On Windows, if `python` is not found, use `py`.
 - The length counts the full path from the drive or root, not only the part you can see inside the folder you scanned, because that is what Windows counts.
 - Characters are counted the way Windows counts them, in UTF-16 units. Most characters count as one; rare ones such as emoji count as two.
 - Only the character count is checked. A clean report does not mean every program will open every file, and the tool cannot tell which programs opted in to longer paths.
-- The tool uses Python's os.walk, which by default does not follow links into other folders.
-- Folders that cannot be read are counted and mentioned in the report.
+- Final checker refuses unsafe links/reparse/hardlinks/special entries and traversal, including linked parents. Enumeration errors are visible and return exit 2, not a clean complete report.
+- Folders that cannot be read make the report incomplete and return exit 2.
 - The tool only reads the folder. Tests check that nothing is changed or created.
-- Tested only on small made-up folders. Python 3.10 and 3.12 on Linux, and, by GitHub Actions, Python 3.12 on Windows and Ubuntu. One test is skipped on Windows by design: making a folder unreadable with chmod only works on Linux and similar systems. Not tested on a Windows 10 or 11 desktop or on real folders.
 - Educational example, no warranty. Use at your own risk.
 - Code is MIT licensed (see LICENSE). Python belongs to its owners; this repository does not include it.
+
+## Repaired setup and evidence
+
+Two Windows and two Ubuntu full replays run the exact visible source. 33 tests pass, with two Windows skips (Unix pipe and POSIX chmod). Both exercise symlinks. Pairs differ only in unique temporary lesson paths and unittest time. Displayed output is first Windows run. Full paths and lengths depend on where the lesson folder lives. Recorder uses and removes only its own temporary lesson folder.
+NEW sample setup exclusively creates tiny fictional files. Existing/traversal/linked-parent paths refuse; repeat is not a reset. Partial setup remains on failure; use another new folder. Final checker refuses unsafe input/ancestor/tree links/reparse/hardlinks/special entries and traversal. Enumeration errors produce visible incomplete status and exit 2 rather than false clean. Cap 10000 root+tree entries, with sorted listings still consuming memory/time. Stop editors/sync; no hostile-race guarantee.
+33 small tests: original 19 count/report/listing cases, four setup-preservation and ten filesystem/error cases. Symlink creation can skip where unavailable. No real migration or desktop Windows proof.
+This tool counts absolute path UTF-16 units. Traditional MAX_PATH includes a null terminator; flagging at 260 units is a heuristic, not a precise per-program or destination guarantee. Directory limits, long-path opt-ins and extended prefixes vary. A clean report does not prove every program will accept every path. Read-only checker has no write/network code; paths may be private, and other software/sync is uncontrolled.
