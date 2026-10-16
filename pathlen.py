@@ -13,6 +13,8 @@ moves or deletes anything.
 
 import os
 import sys
+import stat
+from pathlib import Path
 
 LIMIT = 260  # MAX_PATH on Windows, from Microsoft's documentation
 
@@ -29,6 +31,23 @@ def win_len(text):
         return len(text)
 
 
+def safe_input(value, directory=False):
+    path = Path(value).absolute()
+    if '..' in path.parts:
+        raise OSError('Parent-traversal paths are unsupported.')
+    for part in [*reversed(path.parents), path]:
+        info = part.lstat()
+        if stat.S_ISLNK(info.st_mode) or getattr(info,'st_file_attributes',0) & 0x400:
+            raise OSError('Links/reparse points are unsupported.')
+    info = path.lstat()
+    if directory:
+        if not stat.S_ISDIR(info.st_mode):
+            raise OSError('Expected an ordinary directory.')
+    elif not stat.S_ISREG(info.st_mode) or info.st_nlink != 1:
+        raise OSError('Expected an ordinary singly linked file.')
+    return path
+
+
 def scan(folder):
     """Walk a folder and find paths of LIMIT characters or more.
 
@@ -38,22 +57,37 @@ def scan(folder):
     too_long - list of (length, path), longest first
     errors   - how many folders could not be read
     """
-    root = os.path.abspath(folder)
+    root = str(safe_input(folder, directory=True))
     checked = 0
     too_long = []
     errors = []
-
-    def on_error(exc):
-        errors.append(exc)
-
-    for dirpath, _dirnames, filenames in os.walk(root, onerror=on_error):
-        paths = [dirpath]
-        paths.extend(os.path.join(dirpath, name) for name in filenames)
-        for path in paths:
-            checked += 1
-            length = win_len(path)
-            if length >= LIMIT:
-                too_long.append((length, path))
+    stack = [Path(root)]
+    while stack:
+        current = stack.pop()
+        safe_input(current, directory=True)
+        checked += 1
+        length = win_len(str(current))
+        if length >= LIMIT:
+            too_long.append((length, str(current)))
+        try:
+            with os.scandir(current) as entries:
+                ordered = sorted(entries, key=lambda entry: entry.name)
+        except OSError as error:
+            errors.append(error)
+            continue
+        for entry in ordered:
+            info = entry.stat(follow_symlinks=False)
+            directory = stat.S_ISDIR(info.st_mode)
+            child = safe_input(entry.path, directory=directory)
+            if directory:
+                stack.append(child)
+            else:
+                checked += 1
+                length = win_len(str(child))
+                if length >= LIMIT:
+                    too_long.append((length, str(child)))
+            if checked + len(stack) > 10000:
+                raise OSError('More than 10000 entries; refusing this tree.')
     too_long.sort(reverse=True)
     return root, checked, too_long, errors
 
@@ -68,7 +102,11 @@ def main(argv):
     if not os.path.isdir(folder):
         print("Not a folder: " + folder)
         return 1
-    root, checked, too_long, errors = scan(folder)
+    try:
+        root, checked, too_long, errors = scan(folder)
+    except OSError as error:
+        print('Could not read: ' + str(error))
+        return 2
     print("Path length report")
     print("Folder: " + root)
     print("Checked: {} files and folders".format(checked))
@@ -77,12 +115,14 @@ def main(argv):
         print("Too long for many Windows programs (260 characters or more):")
         for length, path in too_long:
             print("{}  {}".format(length, path))
-    else:
+    elif not errors:
         print("No path is 260 characters or more.")
+    else:
+        print("Incomplete scan: unvisited paths may exceed the limit.")
     if errors:
         print("")
         print("Note: {} folder(s) could not be read.".format(len(errors)))
-    return 0
+    return 2 if errors else 0
 
 
 if __name__ == "__main__":
