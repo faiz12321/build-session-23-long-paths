@@ -1,0 +1,24 @@
+name: test
+on: [push, workflow_dispatch]
+jobs:
+  test:
+    strategy:
+      matrix:
+        os: [windows-latest, ubuntu-latest]
+    runs-on: ${{ matrix.os }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      - run: python -m unittest -v
+      - run: python make_sample.py
+      - name: Reports on the sample files
+        shell: python
+        run: |
+          import subprocess, sys
+          def run(*args):
+              return subprocess.run([sys.executable, "pathlen.py", *args], capture_output=True, text=True)
+          r = run("sample")
+          assert r.returncode == 0 and "Too long for many Windows programs" in r.stdout and "printing notes for the leaflets.txt" in r.stdout and "notes.txt" not in r.stdout and "Checked: 7 files and folders" in r.stdout, r.stdout
+          print("Sample path length report checked.")
