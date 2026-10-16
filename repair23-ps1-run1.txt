@@ -1,0 +1,74 @@
+### CMD: python --version
+Python 3.12.10
+### EXIT: 0
+
+### CMD: python make_sample.py
+Made sample/ with 2 files and 5 folders.
+The deep file sits 262 characters inside sample/.
+Its full path also counts the folders above sample/.
+### EXIT: 0
+
+### CMD: python make_sample.py
+Stopped: sample already exists. Nothing was replaced or deleted.
+### EXIT: 1
+
+### CMD: python pathlen.py sample
+6 sample
+### EXIT: 0
+
+### CMD: python pathlen.py sample
+Path length report
+Folder: C:\Users\RUNNER~1\AppData\Local\Temp\lesson23-record-zzfex5g7\sample
+Checked: 7 files and folders
+
+Too long for many Windows programs (260 characters or more):
+331  C:\Users\RUNNER~1\AppData\Local\Temp\lesson23-record-zzfex5g7\sample\Project archive copied from the old shared drive\Backup of the marketing folder before the office move\Campaign photos and draft leaflets for the spring launch\Final versions approved and sent to the print shop\Read me first - printing notes for the leaflets.txt
+279  C:\Users\RUNNER~1\AppData\Local\Temp\lesson23-record-zzfex5g7\sample\Project archive copied from the old shared drive\Backup of the marketing folder before the office move\Campaign photos and draft leaflets for the spring launch\Final versions approved and sent to the print shop
+### EXIT: 0
+
+### CMD: python -m unittest -v
+test_extra_argument_prints_usage (test_pathlen.CliExtraTests.test_extra_argument_prints_usage) ... ok
+test_a_file_is_not_a_folder (test_pathlen.CliTests.test_a_file_is_not_a_folder) ... ok
+test_clean_folder_says_so (test_pathlen.CliTests.test_clean_folder_says_so) ... ok
+test_long_path_is_listed_with_its_length (test_pathlen.CliTests.test_long_path_is_listed_with_its_length) ... ok
+test_missing_folder_is_a_clear_error (test_pathlen.CliTests.test_missing_folder_is_a_clear_error) ... ok
+test_no_arguments_prints_usage (test_pathlen.CliTests.test_no_arguments_prints_usage) ... ok
+test_tool_does_not_change_the_tree (test_pathlen.CliTests.test_tool_does_not_change_the_tree) ... ok
+test_tool_has_no_write_code (test_pathlen.CliTests.test_tool_has_no_write_code) ... ok
+test_bytes_mtimes_preserved (test_pathlen.FilesystemSafety.test_bytes_mtimes_preserved) ... ok
+test_enumeration_error_returns_nonzero (test_pathlen.FilesystemSafety.test_enumeration_error_returns_nonzero) ... ok
+test_file_link_refused (test_pathlen.FilesystemSafety.test_file_link_refused) ... ok
+test_hardlink_refused (test_pathlen.FilesystemSafety.test_hardlink_refused) ... ok
+test_loop_refused (test_pathlen.FilesystemSafety.test_loop_refused) ... ok
+test_pipe_refused (test_pathlen.FilesystemSafety.test_pipe_refused) ... skipped 'Unix pipe unavailable'
+test_root_link_refused (test_pathlen.FilesystemSafety.test_root_link_refused) ... ok
+test_setup_linked_parent_refused (test_pathlen.FilesystemSafety.test_setup_linked_parent_refused) ... ok
+test_setup_traversal_refused (test_pathlen.FilesystemSafety.test_setup_traversal_refused) ... ok
+test_traversal_refused (test_pathlen.FilesystemSafety.test_traversal_refused) ... ok
+test_cli_repeat_preserves_every_output (test_pathlen.SafeSetup.test_cli_repeat_preserves_every_output) ... ok
+test_existing_file_preserved (test_pathlen.SafeSetup.test_existing_file_preserved) ... ok
+test_existing_folder_preserves_nested_bytes_and_mtime (test_pathlen.SafeSetup.test_existing_folder_preserves_nested_bytes_and_mtime) ... ok
+test_repeat_preserves_every_output (test_pathlen.SafeSetup.test_repeat_preserves_every_output) ... ok
+test_emoji_name_measured_like_windows (test_pathlen.ScanCountingTests.test_emoji_name_measured_like_windows) ... ok
+test_unreadable_folder_is_counted (test_pathlen.ScanCountingTests.test_unreadable_folder_is_counted) ... skipped 'chmod makes a folder unreadable on POSIX only'
+test_259_is_not_flagged (test_pathlen.ScanTests.test_259_is_not_flagged) ... ok
+test_empty_folder_scans_clean (test_pathlen.ScanTests.test_empty_folder_scans_clean) ... ok
+test_long_path_is_flagged_with_utf16_length (test_pathlen.ScanTests.test_long_path_is_flagged_with_utf16_length) ... ok
+test_longest_comes_first (test_pathlen.ScanTests.test_longest_comes_first) ... ok
+test_relative_path_is_measured_as_absolute (test_pathlen.ScanTests.test_relative_path_is_measured_as_absolute) ... ok
+test_short_paths_are_not_flagged (test_pathlen.ScanTests.test_short_paths_are_not_flagged) ... ok
+test_accented_letter_counts_one (test_pathlen.WinLenTests.test_accented_letter_counts_one) ... ok
+test_emoji_counts_two_like_windows (test_pathlen.WinLenTests.test_emoji_counts_two_like_windows) ... ok
+test_plain_ascii_counts_one_each (test_pathlen.WinLenTests.test_plain_ascii_counts_one_each) ... ok
+
+----------------------------------------------------------------------
+Ran 33 tests in 0.478s
+
+OK (skipped=2)
+Made sample/ with 2 files and 5 folders.
+The deep file sits 262 characters inside sample/.
+Its full path also counts the folders above sample/.
+Made sample/ with 2 files and 5 folders.
+The deep file sits 262 characters inside sample/.
+Its full path also counts the folders above sample/.
+### EXIT: 0
